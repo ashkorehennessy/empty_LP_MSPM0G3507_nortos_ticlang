@@ -249,10 +249,9 @@ TIMER1.interrupts         = ["ZERO"];
 TIMER1.timerMode          = "PERIODIC";
 TIMER1.$name              = "TIMER_Encoder_Read";
 TIMER1.timerStartTimer    = true;
-TIMER1.timerPeriod        = "10 ms";
-TIMER1.timerClkSrc        = "LFCLK";
-TIMER1.timerClkDiv        = 3;
-TIMER1.timerClkPrescale   = 55;
+TIMER1.timerPeriod        = "5 ms";
+TIMER1.timerClkDiv        = 8;
+TIMER1.timerClkPrescale   = 100;
 TIMER1.peripheral.$assign = "TIMG7";
 
 UART1.$name             = "UART_0";

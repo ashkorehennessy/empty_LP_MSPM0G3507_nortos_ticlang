@@ -10,6 +10,12 @@ Motor motor_init(GPTIMER_Regs * pwm_inst, DL_TIMER_CC_INDEX cc0_index, DL_TIMER_
 }
 
 void motor_set_speed(Motor *motor, int speed){
+    if(speed > MAX_SPEED){
+        speed = MAX_SPEED;
+    }else if(speed < -MAX_SPEED){
+        speed = -MAX_SPEED;
+    }
+
     if (speed >= 0) {
         DL_TimerG_setCaptureCompareValue(motor->pwm_inst, speed, motor->cc0_index);
         DL_TimerG_setCaptureCompareValue(motor->pwm_inst, 0, motor->cc1_index);

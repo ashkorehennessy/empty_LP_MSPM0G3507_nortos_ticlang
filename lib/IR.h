@@ -26,4 +26,6 @@ void IR_Init(IR_t* ir, GPIO_Regs* S1_port, uint32_t S1_pin, GPIO_Regs* S2_port, 
 
 void IR_Read(IR_t* ir);
 
+float IR_get_pos(IR_t* ir);
+
 #endif //EMPTY_LP_MSPM0G3507_NORTOS_TICLANG_IR_H

@@ -22,9 +22,9 @@ void GROUP1_IRQHandler(void){
 
     if (gpioA & Encoder_Right_ER1_PIN){
         if(DL_GPIO_readPins(GPIOA,Encoder_Right_ER2_PIN)){
-            right_count--;
-        } else {
             right_count++;
+        } else {
+            right_count--;
         }
         DL_GPIO_clearInterruptStatus(GPIOA , Encoder_Right_ER1_PIN);
     }

@@ -3,6 +3,7 @@
 
 #include "ti_msp_dl_config.h"
 
+#define MAX_SPEED 900
 
 // Motor struct
 typedef struct {

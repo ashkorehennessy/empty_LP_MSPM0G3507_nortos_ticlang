@@ -21,3 +21,26 @@ void IR_Read(IR_t* ir){
     ir->S3 = !DL_GPIO_readPins(ir->S3_port, ir->S3_pin);
     ir->S4 = !DL_GPIO_readPins(ir->S4_port, ir->S4_pin);
 }
+
+float IR_get_pos(IR_t* ir) {
+    static float last_pos = 0;
+    if(ir->S1 == 1 && ir->S2 == 1 && ir->S3 == 1 && ir->S4 == 1){
+        return last_pos;
+    }
+    if(ir->S2 == 0 && ir->S3 == 0){
+        return 0;
+    }
+    if(ir->S1 == 0){
+        return -4.5f;
+    }
+    if(ir->S4 == 0){
+        return 4.5f;
+    }
+    if(ir->S2 == 0){
+        return -1.5f;
+    }
+    if(ir->S3 == 0){
+        return 1.5f;
+    }
+    return last_pos;
+}
