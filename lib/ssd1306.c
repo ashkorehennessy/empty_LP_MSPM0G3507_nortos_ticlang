@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>  // For memcpy
 #include "ti_msp_dl_config.h"
+#include "Delay.h"
 #if defined(SSD1306_USE_I2C)
 #define OLED_ADDR   0x3C
 // Indicates status of I2C

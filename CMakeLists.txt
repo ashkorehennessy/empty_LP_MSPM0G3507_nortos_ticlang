@@ -17,8 +17,6 @@ add_executable(empty_LP_MSPM0G3507_nortos_ticlang
         lib/extern.h
         lib/I2C.c
         lib/I2C.h
-        lib/IMU.c
-        lib/IMU.h
         lib/Motor.c
         lib/Motor.h
         lib/MPU6050.c
@@ -40,4 +38,8 @@ add_executable(empty_LP_MSPM0G3507_nortos_ticlang
         lib/UI.c
         lib/ssd1306.c
         lib/IR.c
-        lib/IR.h)
+        lib/IR.h
+        lib/beep.c
+        lib/beep.h
+        lib/counter.c
+        lib/counter.h)

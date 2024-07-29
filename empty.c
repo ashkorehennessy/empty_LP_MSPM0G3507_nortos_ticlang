@@ -53,6 +53,8 @@ encoder L PA8 PA26
 #include "switch.h"
 #include "ssd1306.h"
 #include "IR.h"
+#include "counter.h"
+#include "beep.h"
 volatile unsigned int delay_times = 0;
 uint32_t time_system; 
 IR_t Front_IR;
@@ -94,11 +96,13 @@ int main(void)
     IR_Init(&Back_IR,IRback_SB1_PORT,IRback_SB1_PIN,IRback_SB2_PORT,IRback_SB2_PIN,IRback_SB3_PORT,IRback_SB3_PIN,IRback_SB4_PORT,IRback_SB4_PIN);
 
 
+    beep_ms(500);
+    counter.led_ms = 10000;
+
     while (1) 
 	{
         motor_set_speed(&motor_L, -100);
         motor_set_speed(&motor_R, -100);
-
         UI_show();
         UI_key_process();
         MPU6050_Read_All(&mpu6050);
@@ -108,6 +112,26 @@ int main(void)
     }
 }
 
+void counter_process(){
+    if(counter.beep_ms>0){
+        counter.beep_ms-=10;
+        beep_on();
+    }else{
+        beep_off();
+    }
+
+    if(counter.led_ms % 501 > 250){
+        DL_GPIO_setPins(LED_PORT, LED_led1_PIN);
+        DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
+
+    }else{
+        DL_GPIO_clearPins(LED_PORT, LED_led1_PIN);
+        DL_GPIO_setPins(LED_PORT, LED_led2_PIN);
+    }
+    if(counter.led_ms > 0){
+        counter.led_ms-=10;
+    }
+}
 
 void TIMER_Encoder_Read_INST_IRQHandler(void){
     uptime += 10;
@@ -119,4 +143,5 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
     right_count=0;
     IR_Read(&Front_IR);
     IR_Read(&Back_IR);
+    counter_process();
 }
