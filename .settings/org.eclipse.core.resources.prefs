@@ -13,5 +13,7 @@ encoding//Debug/sources.mk=UTF-8
 encoding//Debug/subdir_rules.mk=UTF-8
 encoding//Debug/subdir_vars.mk=UTF-8
 encoding//lib/Encoder.c=UTF-8
+encoding//lib/MPU6050.c=UTF-8
+encoding//lib/MPU6050.h=UTF-8
 encoding//lib/UI.c=UTF-8
 encoding//lib/ssd1306.c=UTF-8

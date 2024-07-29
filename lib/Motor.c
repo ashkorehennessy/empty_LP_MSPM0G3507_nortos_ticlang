@@ -5,6 +5,7 @@ Motor motor_init(GPTIMER_Regs * pwm_inst, DL_TIMER_CC_INDEX cc0_index, DL_TIMER_
     motor.pwm_inst = pwm_inst;
     motor.cc0_index = cc0_index;
     motor.cc1_index = cc1_index;
+    DL_TimerG_startCounter(pwm_inst);
     return motor;
 }
 

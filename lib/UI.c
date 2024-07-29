@@ -173,14 +173,18 @@ void UI_init(){
     }
     UI_item_init(&items[0][0], "spedL", INT32, &speed_L);
     UI_item_init(&items[0][1], "spedR", INT32, &speed_R);
-    UI_item_init(&items[0][2], "IRFS1", UINT8, &Front_IR.S1);
-    UI_item_init(&items[0][3], "IRFS2", UINT8, &Front_IR.S2);
-    UI_item_init(&items[0][4], "IRFS3", UINT8, &Front_IR.S3);
-    UI_item_init(&items[0][5], "IRFS4", UINT8, &Front_IR.S4);
-    UI_item_init(&items[1][2], "IRBS1", UINT8, &Back_IR.S1);
-    UI_item_init(&items[1][3], "IRBS2", UINT8, &Back_IR.S2);
-    UI_item_init(&items[1][4], "IRBS3", UINT8, &Back_IR.S3);
-    UI_item_init(&items[1][5], "IRBS4", UINT8, &Back_IR.S4);
+    UI_item_init(&items[0][2], "AngZ ", DOUBLE, &mpu6050.AngleZ);
+    UI_item_init(&items[0][3], "IRFS1", UINT8, &Front_IR.S1);
+    UI_item_init(&items[0][4], "IRFS2", UINT8, &Front_IR.S2);
+    UI_item_init(&items[0][5], "IRFS3", UINT8, &Front_IR.S3);
+    UI_item_init(&items[0][6], "IRFS4", UINT8, &Front_IR.S4);
+    UI_item_init(&items[1][0], "gx   ", DOUBLE, &mpu6050.Gx);
+    UI_item_init(&items[1][1], "gy   ", DOUBLE, &mpu6050.Gy);
+    UI_item_init(&items[1][2], "gz   ", DOUBLE, &mpu6050.Gz);
+    UI_item_init(&items[1][3], "IRBS1", UINT8, &Back_IR.S1);
+    UI_item_init(&items[1][4], "IRBS2", UINT8, &Back_IR.S2);
+    UI_item_init(&items[1][5], "IRBS3", UINT8, &Back_IR.S3);
+    UI_item_init(&items[1][6], "IRBS4", UINT8, &Back_IR.S4);
 
 
 }
