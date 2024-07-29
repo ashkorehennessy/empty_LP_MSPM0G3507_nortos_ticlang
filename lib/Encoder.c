@@ -30,13 +30,3 @@ void GROUP1_IRQHandler(void){
     }
 }
 
-// 10ms to read encoder, and read mpu6050
-void TIMER_Encoder_Read_INST_IRQHandler(void){
-    speed_L=left_count;
-    speed_R=right_count;
-    left_count_sum+=left_count;
-    right_count_sum+=right_count;
-    left_count=0;
-    right_count=0;
-//    MPU6050_Read_All(&mpu,0);
-}

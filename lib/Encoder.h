@@ -5,7 +5,6 @@
 
 void GROUP1_IRQHandler(void);
 
-void TIMER_Encoder_Read_INST_IRQHandler(void);
 
 extern int left_count;
 extern int right_count;

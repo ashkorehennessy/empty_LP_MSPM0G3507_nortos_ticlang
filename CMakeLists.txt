@@ -38,4 +38,6 @@ add_executable(empty_LP_MSPM0G3507_nortos_ticlang
         empty.c
         lib/switch.c
         lib/UI.c
-        lib/ssd1306.c)
+        lib/ssd1306.c
+        lib/IR.c
+        lib/IR.h)

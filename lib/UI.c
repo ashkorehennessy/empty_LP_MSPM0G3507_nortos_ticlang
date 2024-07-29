@@ -10,6 +10,7 @@
 #include "math.h"
 #include "mpu6050.h"
 #include "PID.h"
+#include "IR.h"
 
 char buf[32];
 UI_item items[8][SCREEN_H / FONT_H - 1];
@@ -21,7 +22,8 @@ int key_pressed = 0;
 
 extern int speed_L;
 extern int speed_R;
-
+extern IR_t Front_IR;
+extern IR_t Back_IR;
 
 void UI_item_init(UI_item *item, const char *name, int type, void *var_ptr) {
     strcpy(item->name, name);
@@ -171,6 +173,15 @@ void UI_init(){
     }
     UI_item_init(&items[0][0], "spedL", INT32, &speed_L);
     UI_item_init(&items[0][1], "spedR", INT32, &speed_R);
+    UI_item_init(&items[0][2], "IRFS1", UINT8, &Front_IR.S1);
+    UI_item_init(&items[0][3], "IRFS2", UINT8, &Front_IR.S2);
+    UI_item_init(&items[0][4], "IRFS3", UINT8, &Front_IR.S3);
+    UI_item_init(&items[0][5], "IRFS4", UINT8, &Front_IR.S4);
+    UI_item_init(&items[1][2], "IRBS1", UINT8, &Back_IR.S1);
+    UI_item_init(&items[1][3], "IRBS2", UINT8, &Back_IR.S2);
+    UI_item_init(&items[1][4], "IRBS3", UINT8, &Back_IR.S3);
+    UI_item_init(&items[1][5], "IRBS4", UINT8, &Back_IR.S4);
+
 
 }
 

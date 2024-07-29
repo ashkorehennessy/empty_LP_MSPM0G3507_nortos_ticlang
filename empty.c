@@ -43,12 +43,8 @@ encoder L PA8 PA26
 
 
 #include "ti_msp_dl_config.h"
-#include "OLED.h"
-#include "Servo.h"
-#include "Sonic.h"
 #include "Delay.h"
 #include "stdio.h"
-#include "Uart.h"
 #include "MPU6050.h"
 #include "Motor.h"
 #include "Encoder.h"
@@ -57,10 +53,12 @@ encoder L PA8 PA26
 #include "UI.h"
 #include "switch.h"
 #include "ssd1306.h"
-//�����δ���ʱ��ʵ�ֵľ�ȷms��ʱ
+#include "IR.h"
 volatile unsigned int delay_times = 0;
 uint32_t time_system; 
 MPU6050_t mpu;
+IR_t Front_IR;
+IR_t Back_IR;
 void Delay_Systick_ms(unsigned int ms) 
 {
     delay_times = ms;
@@ -98,6 +96,8 @@ int main(void)
     NVIC_EnableIRQ(TIMER_Encoder_Read_INST_INT_IRQN );
     Motor motor_L = motor_init(PWM_Motor_L_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);
     Motor motor_R = motor_init(PWM_Motor_R_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);
+    IR_Init(&Front_IR,IRfront_SF1_PORT,IRfront_SF1_PIN,IRfront_SF2_PORT,IRfront_SF2_PIN,IRfront_SF3_PORT,IRfront_SF3_PIN,IRfront_SF4_PORT,IRfront_SF4_PIN);
+    IR_Init(&Back_IR,IRback_SB1_PORT,IRback_SB1_PIN,IRback_SB2_PORT,IRback_SB2_PIN,IRback_SB3_PORT,IRback_SB3_PIN,IRback_SB4_PORT,IRback_SB4_PIN);
 
 
     while (1) 
@@ -105,7 +105,7 @@ int main(void)
 
          UI_show();
          UI_key_process();
-        delay_ms(20);
+         delay_ms(20);
 
 
 
@@ -113,31 +113,15 @@ int main(void)
     }
 }
 
-void INT_timeG8()
-{           
-    time_system++;
-    static uint16_t cnt = 0;
-    cnt++;
-    if(cnt%10==0)
-    {
-        MPU6050_Read_All(&mpu,0);
 
-    }
-    if(cnt>=1000)
-    {
-        cnt=0;
-        // DL_GPIO_togglePins(LED_PORT,LED_led1_PIN);
-    }
-
+void TIMER_Encoder_Read_INST_IRQHandler(void){
+    speed_L=left_count;
+    speed_R=right_count;
+    left_count_sum+=left_count;
+    right_count_sum+=right_count;
+    left_count=0;
+    right_count=0;
+//    MPU6050_Read_All(&mpu,0);
+    IR_Read(&Front_IR);
+    IR_Read(&Back_IR);
 }
-
-//void TIMER_system_INST_IRQHandler(void)
-//{
-//    switch (DL_TimerG_getPendingInterrupt(TIMER_system_INST)) {
-//        case DL_TIMER_IIDX_ZERO:
-//         INT_timeG8();
-//            break;
-//        default:
-//            break;
-//    }
-//}
