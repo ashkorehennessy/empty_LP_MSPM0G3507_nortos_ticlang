@@ -59,26 +59,29 @@ encoder L PA8 PA26
 #include "tasks.h"
 volatile unsigned int delay_times = 0;
 uint32_t time_system; 
-IR_t Front_IR;
-IR_t Back_IR;
-float front_ir_pos;
+IR_t Left_IR;
+IR_t Right_IR;
+int ir_pos;
 PID_Base track_pid;
 PID_Base angle_pid;
+PID_Base roaming_pid;
 PID_Base left_pid;
 PID_Base right_pid;
 Motor motor_L;
 Motor motor_R;
-float base_setpoint = 30;
+float base_setpoint = 50;
 float left_setpoint = 0;
 float right_setpoint = 0;
+int ir_not_found = 0;
+int need_calibrate = 0;
+int first_detect = 0;
 extern uint8_t task_index;
 void Delay_Systick_ms(unsigned int ms) 
 {
     delay_times = ms;
     while( delay_times != 0 );
 }      
- 
-//�δ���ʱ���ж�
+
 void SysTick_Handler(void)
 {
     if( delay_times != 0 )
@@ -95,10 +98,11 @@ uint32_t uptime = 0;
 int main(void)
 {
     SYSCFG_DL_init();
-    track_pid = PID_Base_Init(-10, 0, -1, 800, -800, 1, 0, 0, 0);
-    angle_pid = PID_Base_Init(0.7, 0.001, 0, 900, -900, 1, 0, 0, 0);
-    left_pid = PID_Base_Init(15, 0.25, 1, 900, -900, 1, 1, 0.33f, 0);
-    right_pid = PID_Base_Init(15, 0.25, 1, 900, -900, 1, 1, 0.33f, 0);
+    track_pid = PID_Base_Init(-2, 0, 0, 800, -800, 1, 0, 0, 0);
+    angle_pid = PID_Base_Init(1.5, 0, 0, 900, -900, 1, 0, 0, 0);
+    roaming_pid = PID_Base_Init(0, 0, 0, 900, -900, 0, 0, 0, 0);
+    left_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
+    right_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
 	ssd1306_Init();
     UI_init();
     MPU6050_Init();
@@ -110,8 +114,8 @@ int main(void)
     motor_L = motor_init(PWM_Motor_R_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);//B4 B1
     motor_R = motor_init(PWM_Motor_L_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);//B6 B7
 
-    IR_Init(&Front_IR,IRfront_SF1_PORT,IRfront_SF1_PIN,IRfront_SF2_PORT,IRfront_SF2_PIN,IRfront_SF3_PORT,IRfront_SF3_PIN,IRfront_SF4_PORT,IRfront_SF4_PIN);
-    IR_Init(&Back_IR,IRback_SB1_PORT,IRback_SB1_PIN,IRback_SB2_PORT,IRback_SB2_PIN,IRback_SB3_PORT,IRback_SB3_PIN,IRback_SB4_PORT,IRback_SB4_PIN);
+    IR_Init(&Left_IR, IRfront_SF1_PORT, IRfront_SF1_PIN, IRfront_SF2_PORT, IRfront_SF2_PIN, IRfront_SF3_PORT, IRfront_SF3_PIN, IRfront_SF4_PORT, IRfront_SF4_PIN);
+    IR_Init(&Right_IR, IRback_SB1_PORT, IRback_SB1_PIN, IRback_SB2_PORT, IRback_SB2_PIN, IRback_SB3_PORT, IRback_SB3_PIN, IRback_SB4_PORT, IRback_SB4_PIN);
 
     while (1) 
 	{
@@ -138,6 +142,55 @@ int main(void)
 
 
     }
+}
+
+int IR_not_found(){
+    static int time_limit = 0;
+    if(Left_IR.S1 + Left_IR.S2 + Left_IR.S3 + Left_IR.S4 + Right_IR.S1 + Right_IR.S2 + Right_IR.S3 + Right_IR.S4 == 8){
+        time_limit += 5;
+        if(time_limit > 1000){
+            return 1;
+        }
+    } else {
+        time_limit = 0;
+        if(need_calibrate == 1){
+            if(Left_IR.S1 == 0){
+                mpu6050.AngleZ += 4.5;
+                first_detect = 1;
+            }
+            if(Left_IR.S2 == 0){
+                mpu6050.AngleZ += 1.6;
+                first_detect = 2;
+            }
+            if(Left_IR.S3 == 0){
+                mpu6050.AngleZ += 1.4;
+                first_detect = 3;
+            }
+            if(Left_IR.S4 == 0){
+                mpu6050.AngleZ += 0.1;
+                first_detect = 4;
+            }
+            if(Right_IR.S1 == 0){
+                mpu6050.AngleZ -= 0.1;
+                first_detect = 5;
+            }
+            if(Right_IR.S2 == 0){
+                mpu6050.AngleZ -= 1.4;
+                first_detect = 6;
+            }
+            if(Right_IR.S3 == 0){
+                mpu6050.AngleZ -= 1.6;
+                first_detect = 7;
+            }
+            if(Right_IR.S4 == 0){
+                mpu6050.AngleZ -= 4.5;
+                first_detect = 8;
+            }
+            need_calibrate = 0;
+        }
+        return 0;
+    }
+    return 0;
 }
 
 void counter_process(){
@@ -177,12 +230,17 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
     right_count_sum+=right_count;
     left_count=0;
     right_count=0;
-    IR_Read(&Front_IR);
-    IR_Read(&Back_IR);
-    front_ir_pos = IR_get_pos(&Front_IR);
+    IR_Read(&Left_IR);
+    IR_Read(&Right_IR);
+    ir_not_found = IR_not_found();
+    ir_pos = IR_get_pos(&Left_IR, &Right_IR);
     if(task_running == 1 && task_index < 5) {
         if (tracking_mode == 1) {
-            turn_out = PID_Base_Calc(&track_pid, front_ir_pos, 0);
+            if(ir_not_found == 0) {
+                turn_out = PID_Base_Calc(&track_pid, ir_pos, 0);
+            } else {
+                turn_out = PID_Base_Calc(&roaming_pid, mpu6050.AngleZ, target_angle);
+            }
         } else {
             turn_out = PID_Base_Calc(&angle_pid, mpu6050.AngleZ, target_angle);
         }

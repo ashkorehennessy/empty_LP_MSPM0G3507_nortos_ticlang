@@ -23,11 +23,13 @@ int key_pressed = 0;
 
 extern int speed_L;
 extern int speed_R;
-extern IR_t Front_IR;
-extern IR_t Back_IR;
+extern IR_t Left_IR;
+extern IR_t Right_IR;
 extern int left_setpoint;
 extern int right_setpoint;
-extern float front_ir_pos;
+extern float ir_pos;
+extern int ir_not_found;
+extern int first_detect;
 
 void UI_item_init(UI_item *item, const char *name, int type, void *var_ptr) {
     strcpy(item->name, name);
@@ -178,24 +180,26 @@ void UI_init(){
     UI_item_init(&items[0][0], "spedL", INT32, &speed_L);
     UI_item_init(&items[0][1], "spedR", INT32, &speed_R);
     UI_item_init(&items[0][2], "AngZ ", DOUBLE, &mpu6050.AngleZ);
-    UI_item_init(&items[0][3], "IRFS1", UINT8, &Front_IR.S1);
-    UI_item_init(&items[0][4], "IRFS2", UINT8, &Front_IR.S2);
-    UI_item_init(&items[0][5], "IRFS3", UINT8, &Front_IR.S3);
-    UI_item_init(&items[0][6], "IRFS4", UINT8, &Front_IR.S4);
+    UI_item_init(&items[0][3], "IRFS1", UINT8, &Left_IR.S1);
+    UI_item_init(&items[0][4], "IRFS2", UINT8, &Left_IR.S2);
+    UI_item_init(&items[0][5], "IRFS3", UINT8, &Left_IR.S3);
+    UI_item_init(&items[0][6], "IRFS4", UINT8, &Left_IR.S4);
     UI_item_init(&items[1][0], "set1 ", INT32, &left_setpoint);
     UI_item_init(&items[1][1], "set2 ", INT32, &right_setpoint);
     UI_item_init(&items[1][2], "gz   ", DOUBLE, &mpu6050.Gz);
-    UI_item_init(&items[1][3], "IRBS1", UINT8, &Back_IR.S1);
-    UI_item_init(&items[1][4], "IRBS2", UINT8, &Back_IR.S2);
-    UI_item_init(&items[1][5], "IRBS3", UINT8, &Back_IR.S3);
-    UI_item_init(&items[1][6], "IRBS4", UINT8, &Back_IR.S4);
-    UI_item_init(&items[2][0], "fpos ", FLOAT, &front_ir_pos);
+    UI_item_init(&items[1][3], "IRBS1", UINT8, &Right_IR.S1);
+    UI_item_init(&items[1][4], "IRBS2", UINT8, &Right_IR.S2);
+    UI_item_init(&items[1][5], "IRBS3", UINT8, &Right_IR.S3);
+    UI_item_init(&items[1][6], "IRBS4", UINT8, &Right_IR.S4);
+    UI_item_init(&items[2][0], "fpos ", INT32, &ir_pos);
     UI_item_init(&items[2][1], "Lsum ", INT32, &left_count_sum);
     UI_item_init(&items[2][2], "Rsum ", INT32, &right_count_sum);
     UI_item_init(&items[2][3], "Trun ", UINT8, &task_running);
     UI_item_init(&items[2][4], "Tidx ", UINT8, &task_index);
     UI_item_init(&items[2][5], "tdist", INT32, &target_distance);
     UI_item_init(&items[2][6], "tAngl", FLOAT, &target_angle);
+    UI_item_init(&items[3][0], "IRnf ", INT32, &ir_not_found);
+    UI_item_init(&items[3][1], "fdet ", INT32, &first_detect);
 
 
 }

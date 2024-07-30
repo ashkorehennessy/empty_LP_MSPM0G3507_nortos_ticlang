@@ -11,6 +11,7 @@ extern int target_distance;
 extern uint8_t task_running;
 extern uint8_t task_index;
 extern float input_pos;
+extern int need_calibrate;
 int task1_prepare();
 int task1();
 int task2_prepare();

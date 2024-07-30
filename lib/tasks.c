@@ -15,11 +15,13 @@ uint8_t task_running = 0;
 uint8_t task_index = 4;
 extern int left_count_sum;
 extern int right_count_sum;
+extern int need_calibrate;
 
 int task1_prepare(){
     target_distance = 22000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
+    need_calibrate = 0;
 }
 int task1(){
     if(left_count_sum + right_count_sum > target_distance){
@@ -36,6 +38,7 @@ int task2_prepare(){
     target_distance = 22000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
+    need_calibrate = 0;
 }
 int task2(){
     static int task_state = 0;
@@ -80,6 +83,7 @@ int task3_prepare(){
     target_distance = 28000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
+    need_calibrate = 1;
 }
 
 int task3(){
@@ -97,7 +101,7 @@ int task3(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 2;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 55;
+                target_angle = mpu6050.AngleZ - 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -125,6 +129,7 @@ int task4_prepare(){
     target_distance = 28000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
+    need_calibrate = 1;
 }
 
 int task4(){
@@ -142,7 +147,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 2;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 50;
+                target_angle = mpu6050.AngleZ - 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -154,6 +159,7 @@ int task4(){
                 task_state = 3;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ + 190;
             }
             break;
@@ -161,7 +167,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 4;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 50;
+                target_angle = mpu6050.AngleZ + 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -173,6 +179,7 @@ int task4(){
                 task_state = 5;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ - 190;
             }
             break;
@@ -180,7 +187,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 6;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 50;
+                target_angle = mpu6050.AngleZ - 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -192,6 +199,7 @@ int task4(){
                 task_state = 7;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ + 190;
             }
             break;
@@ -199,7 +207,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 8;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 50;
+                target_angle = mpu6050.AngleZ + 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -211,6 +219,7 @@ int task4(){
                 task_state = 9;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ - 190;
             }
             break;
@@ -218,7 +227,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 10;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 50;
+                target_angle = mpu6050.AngleZ - 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -230,6 +239,7 @@ int task4(){
                 task_state = 11;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ + 190;
             }
             break;
@@ -237,7 +247,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 12;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 50;
+                target_angle = mpu6050.AngleZ + 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -249,6 +259,7 @@ int task4(){
                 task_state = 13;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ - 190;
             }
             break;
@@ -256,7 +267,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 14;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 50;
+                target_angle = mpu6050.AngleZ - 56;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -268,6 +279,7 @@ int task4(){
                 task_state = 15;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ + 190;
             }
             break;
