@@ -42,4 +42,6 @@ add_executable(empty_LP_MSPM0G3507_nortos_ticlang
         lib/beep.c
         lib/beep.h
         lib/counter.c
-        lib/counter.h)
+        lib/counter.h
+        lib/tasks.c
+        lib/tasks.h)

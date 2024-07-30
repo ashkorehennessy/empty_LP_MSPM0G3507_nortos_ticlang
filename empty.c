@@ -56,12 +56,14 @@ encoder L PA8 PA26
 #include "counter.h"
 #include "beep.h"
 #include "PID.h"
+#include "tasks.h"
 volatile unsigned int delay_times = 0;
 uint32_t time_system; 
 IR_t Front_IR;
 IR_t Back_IR;
 float front_ir_pos;
-PID_Base turn_pid;
+PID_Base track_pid;
+PID_Base angle_pid;
 PID_Base left_pid;
 PID_Base right_pid;
 Motor motor_L;
@@ -69,6 +71,7 @@ Motor motor_R;
 float base_setpoint = 30;
 float left_setpoint = 0;
 float right_setpoint = 0;
+extern uint8_t task_index;
 void Delay_Systick_ms(unsigned int ms) 
 {
     delay_times = ms;
@@ -92,7 +95,8 @@ uint32_t uptime = 0;
 int main(void)
 {
     SYSCFG_DL_init();
-    turn_pid = PID_Base_Init(-10, 0, -1, 800, -800, 1, 0, 0, 0);
+    track_pid = PID_Base_Init(-10, 0, -1, 800, -800, 1, 0, 0, 0);
+    angle_pid = PID_Base_Init(0.7, 0.001, 0, 900, -900, 1, 0, 0, 0);
     left_pid = PID_Base_Init(15, 0.25, 1, 900, -900, 1, 1, 0.33f, 0);
     right_pid = PID_Base_Init(15, 0.25, 1, 900, -900, 1, 1, 0.33f, 0);
 	ssd1306_Init();
@@ -109,15 +113,27 @@ int main(void)
     IR_Init(&Front_IR,IRfront_SF1_PORT,IRfront_SF1_PIN,IRfront_SF2_PORT,IRfront_SF2_PIN,IRfront_SF3_PORT,IRfront_SF3_PIN,IRfront_SF4_PORT,IRfront_SF4_PIN);
     IR_Init(&Back_IR,IRback_SB1_PORT,IRback_SB1_PIN,IRback_SB2_PORT,IRback_SB2_PIN,IRback_SB3_PORT,IRback_SB3_PIN,IRback_SB4_PORT,IRback_SB4_PIN);
 
-
-    beep_ms(20);
-    counter.led_ms = 10000;
-
     while (1) 
 	{
         UI_show();
         UI_key_process();
         MPU6050_Read_All(&mpu6050);
+        if(task_running == 1) {
+            switch (task_index) {
+                case 1:
+                    task1();
+                    break;
+                case 2:
+                    task2();
+                    break;
+                case 3:
+                    task3();
+                    break;
+                case 4:
+                    task4();
+                    break;
+            }
+        }
 //        delay_ms(20);
 
 
@@ -132,12 +148,20 @@ void counter_process(){
         beep_off();
     }
 
-    if(counter.led_ms % 501 > 250){
-        DL_GPIO_setPins(LED_PORT, LED_led1_PIN);
-        DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
-    }else{
+    if(counter.led_ms > 0) {
+        if (counter.led_ms % 501 > 250) {
+            DL_GPIO_setPins(LED_PORT, LED_led1_PIN);
+            DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
+            beep_on();
+        } else {
+            DL_GPIO_clearPins(LED_PORT, LED_led1_PIN);
+            DL_GPIO_setPins(LED_PORT, LED_led2_PIN);
+            beep_off();
+        }
+    } else {
         DL_GPIO_clearPins(LED_PORT, LED_led1_PIN);
-        DL_GPIO_setPins(LED_PORT, LED_led2_PIN);
+        DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
+        beep_off();
     }
     if(counter.led_ms > 0){
         counter.led_ms-=5;
@@ -145,6 +169,7 @@ void counter_process(){
 }
 
 void TIMER_Encoder_Read_INST_IRQHandler(void){
+    float turn_out;
     uptime += 5;
     speed_L=left_count;
     speed_R=right_count;
@@ -155,15 +180,24 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
     IR_Read(&Front_IR);
     IR_Read(&Back_IR);
     front_ir_pos = IR_get_pos(&Front_IR);
-    float turn_out = PID_Base_Calc(&turn_pid, front_ir_pos, 0);
-    if(turn_out > 0){
-        left_setpoint = base_setpoint;
-        right_setpoint = base_setpoint - turn_out;
+    if(task_running == 1 && task_index < 5) {
+        if (tracking_mode == 1) {
+            turn_out = PID_Base_Calc(&track_pid, front_ir_pos, 0);
+        } else {
+            turn_out = PID_Base_Calc(&angle_pid, mpu6050.AngleZ, target_angle);
+        }
+        if (turn_out > 0) {
+            left_setpoint = base_setpoint;
+            right_setpoint = base_setpoint - turn_out;
+        } else {
+            right_setpoint = base_setpoint;
+            left_setpoint = base_setpoint + turn_out;
+        }
+        motor_set_speed(&motor_L, (int) PID_Base_Calc(&left_pid, speed_L, left_setpoint));
+        motor_set_speed(&motor_R, (int) PID_Base_Calc(&right_pid, speed_R, right_setpoint));
     } else {
-        right_setpoint = base_setpoint;
-        left_setpoint = base_setpoint + turn_out;
+        motor_set_speed(&motor_L, 0);
+        motor_set_speed(&motor_R, 0);
     }
-    motor_set_speed(&motor_L, (int) PID_Base_Calc(&left_pid, speed_L, left_setpoint));
-    motor_set_speed(&motor_R, (int) PID_Base_Calc(&right_pid, speed_R, right_setpoint));
     counter_process();
 }

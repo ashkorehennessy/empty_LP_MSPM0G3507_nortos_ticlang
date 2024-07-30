@@ -11,7 +11,8 @@
 #include "MPU6050.h"
 #include "PID.h"
 #include "IR.h"
-
+#include "Encoder.h"
+#include "tasks.h"
 char buf[32];
 UI_item items[8][SCREEN_H / FONT_H - 1];
 int empty = 0;
@@ -189,6 +190,12 @@ void UI_init(){
     UI_item_init(&items[1][5], "IRBS3", UINT8, &Back_IR.S3);
     UI_item_init(&items[1][6], "IRBS4", UINT8, &Back_IR.S4);
     UI_item_init(&items[2][0], "fpos ", FLOAT, &front_ir_pos);
+    UI_item_init(&items[2][1], "Lsum ", INT32, &left_count_sum);
+    UI_item_init(&items[2][2], "Rsum ", INT32, &right_count_sum);
+    UI_item_init(&items[2][3], "Trun ", UINT8, &task_running);
+    UI_item_init(&items[2][4], "Tidx ", UINT8, &task_index);
+    UI_item_init(&items[2][5], "tdist", INT32, &target_distance);
+    UI_item_init(&items[2][6], "tAngl", FLOAT, &target_angle);
 
 
 }
@@ -324,6 +331,27 @@ void UI_key_process(){
     if(KEY_BACK && !key_back_pressed){
         key_back_pressed = 1;
         key_pressed = 1;
+        left_count_sum = 0;
+        right_count_sum = 0;
+        if(task_running == 0) {
+            task_running = 1;
+            switch (task_index) {
+                case 1:
+                    task1_prepare();
+                    break;
+                case 2:
+                    task2_prepare();
+                    break;
+                case 3:
+                    task3_prepare();
+                    break;
+                case 4:
+                    task4_prepare();
+                    break;
+            }
+        } else {
+            task_running = 0;
+        }
     } else if(!KEY_BACK && key_back_pressed){
         key_back_pressed = 0;
     }
