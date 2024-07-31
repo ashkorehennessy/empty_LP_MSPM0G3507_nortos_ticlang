@@ -69,7 +69,7 @@ PID_Base left_pid;
 PID_Base right_pid;
 Motor motor_L;
 Motor motor_R;
-float base_setpoint = 50;
+float base_setpoint = 100;
 float left_setpoint = 0;
 float right_setpoint = 0;
 int ir_not_found = 0;
@@ -90,6 +90,29 @@ void SysTick_Handler(void)
     }
 }
 
+#define WINDOW_SIZE 3
+static int moving_average_filter(int new_sample) {
+    static int samples[WINDOW_SIZE] = {0};
+    static int index = 0;
+    static int sum = 0;
+
+    // 更新滑动窗口
+    sum -= samples[index];
+    samples[index] = new_sample;
+    sum += new_sample;
+    index = (index + 1) % WINDOW_SIZE;
+
+    // 计算平均值
+    return (sum / WINDOW_SIZE);
+}
+
+#define LOWPASS_FILTER_FACTOR 0.33f
+static int lowpass_filter(int new_sample) {
+    static int last_sample = 0;
+    int filtered_sample = (last_sample * LOWPASS_FILTER_FACTOR) + new_sample * (1 - LOWPASS_FILTER_FACTOR);
+    last_sample = filtered_sample;
+    return filtered_sample;
+}
 
 uint8_t str[50],str2[50];
 int speed_L=0,speed_R=0,speed=1000,angel_error=0;
@@ -98,8 +121,8 @@ uint32_t uptime = 0;
 int main(void)
 {
     SYSCFG_DL_init();
-    track_pid = PID_Base_Init(-2, 0, 0, 800, -800, 1, 0, 0, 0);
-    angle_pid = PID_Base_Init(1.5, 0, 0, 900, -900, 1, 0, 0, 0);
+    track_pid = PID_Base_Init(-5.5, 0, -12, 800, -800, 1, 0, 0, 0);
+    angle_pid = PID_Base_Init(3, 0, 0, 900, -900, 1, 0, 0, 0);
     roaming_pid = PID_Base_Init(0, 0, 0, 900, -900, 0, 0, 0, 0);
     left_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
     right_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
@@ -109,8 +132,10 @@ int main(void)
 	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
 	NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
     NVIC_EnableIRQ(GPIO_MULTIPLE_GPIOA_INT_IRQN);
-	DL_Timer_startCounter(TIMER_Encoder_Read_INST);
     NVIC_EnableIRQ(TIMER_Encoder_Read_INST_INT_IRQN);
+    NVIC_EnableIRQ(TIMER_IR_READ_INST_INT_IRQN);
+    DL_Timer_startCounter(TIMER_IR_READ_INST);
+    DL_Timer_startCounter(TIMER_Encoder_Read_INST);
     motor_L = motor_init(PWM_Motor_R_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);//B4 B1
     motor_R = motor_init(PWM_Motor_L_INST, DL_TIMER_CC_0_INDEX, DL_TIMER_CC_1_INDEX);//B6 B7
 
@@ -147,8 +172,8 @@ int main(void)
 int IR_not_found(){
     static int time_limit = 0;
     if(Left_IR.S1 + Left_IR.S2 + Left_IR.S3 + Left_IR.S4 + Right_IR.S1 + Right_IR.S2 + Right_IR.S3 + Right_IR.S4 == 8){
-        time_limit += 5;
-        if(time_limit > 1000){
+        time_limit += 1;
+        if(time_limit > 2000){
             return 1;
         }
     } else {
@@ -202,7 +227,7 @@ void counter_process(){
     }
 
     if(counter.led_ms > 0) {
-        if (counter.led_ms % 501 > 250) {
+        if (counter.led_ms % 101 > 50) {
             DL_GPIO_setPins(LED_PORT, LED_led1_PIN);
             DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
             beep_on();
@@ -223,17 +248,15 @@ void counter_process(){
 
 void TIMER_Encoder_Read_INST_IRQHandler(void){
     float turn_out;
-    uptime += 5;
     speed_L=left_count;
     speed_R=right_count;
     left_count_sum+=left_count;
     right_count_sum+=right_count;
     left_count=0;
     right_count=0;
-    IR_Read(&Left_IR);
-    IR_Read(&Right_IR);
-    ir_not_found = IR_not_found();
-    ir_pos = IR_get_pos(&Left_IR, &Right_IR);
+//    ir_pos = moving_average_filter(IR_get_pos(&Left_IR, &Right_IR));
+    ir_pos = lowpass_filter(IR_get_pos(&Left_IR, &Right_IR));
+//    ir_pos = IR_get_pos(&Left_IR, &Right_IR);
     if(task_running == 1 && task_index < 5) {
         if (tracking_mode == 1) {
             if(ir_not_found == 0) {
@@ -258,4 +281,11 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
         motor_set_speed(&motor_R, 0);
     }
     counter_process();
+}
+
+void TIMER_IR_READ_INST_IRQHandler(void){
+    uptime += 500;
+    IR_Read(&Left_IR);
+    IR_Read(&Right_IR);
+    ir_not_found = IR_not_found();
 }

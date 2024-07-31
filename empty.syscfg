@@ -26,6 +26,7 @@ const SYSCTL  = scripting.addModule("/ti/driverlib/SYSCTL");
 const SYSTICK = scripting.addModule("/ti/driverlib/SYSTICK");
 const TIMER   = scripting.addModule("/ti/driverlib/TIMER", {}, false);
 const TIMER1  = TIMER.addInstance();
+const TIMER2  = TIMER.addInstance();
 const UART    = scripting.addModule("/ti/driverlib/UART", {}, false);
 const UART1   = UART.addInstance();
 
@@ -47,8 +48,10 @@ mux8.inputSelect = "HSCLKMUX_SYSPLL2X";
 GPIO1.$name                         = "MPU6050";
 GPIO1.associatedPins.create(2);
 GPIO1.associatedPins[0].$name       = "SCL";
+GPIO1.associatedPins[0].ioStructure = "HS";
 GPIO1.associatedPins[0].pin.$assign = "PA12";
 GPIO1.associatedPins[1].$name       = "SDA";
+GPIO1.associatedPins[1].ioStructure = "HS";
 GPIO1.associatedPins[1].pin.$assign = "PA13";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
@@ -255,6 +258,14 @@ TIMER1.timerClkDiv        = 8;
 TIMER1.timerClkPrescale   = 100;
 TIMER1.peripheral.$assign = "TIMG7";
 
+TIMER2.$name             = "TIMER_IR_READ";
+TIMER2.timerClkDiv       = 8;
+TIMER2.timerClkPrescale  = 250;
+TIMER2.timerMode         = "PERIODIC";
+TIMER2.timerPeriod       = "0.5 ms";
+TIMER2.interrupts        = ["ZERO"];
+TIMER2.interruptPriority = "1";
+
 UART1.$name             = "UART_0";
 UART1.enabledInterrupts = ["RX"];
 UART1.txPinConfig.$name = "ti_driverlib_gpio_GPIOPinGeneric3";
@@ -270,6 +281,7 @@ Board.peripheral.swclkPin.$suggestSolution = "PA20";
 Board.peripheral.swdioPin.$suggestSolution = "PA19";
 PWM1.peripheral.$suggestSolution           = "TIMG6";
 PWM2.peripheral.$suggestSolution           = "TIMA1";
+TIMER2.peripheral.$suggestSolution         = "TIMA0";
 UART1.peripheral.$suggestSolution          = "UART0";
 UART1.peripheral.rxPin.$suggestSolution    = "PA1";
 UART1.peripheral.txPin.$suggestSolution    = "PA0";

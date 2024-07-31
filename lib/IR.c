@@ -3,21 +3,6 @@
 //
 
 #include "IR.h"
-#define WINDOW_SIZE 20
-static int moving_average_filter(int new_sample) {
-    static int samples[WINDOW_SIZE] = {0};
-    static int index = 0;
-    static int sum = 0;
-
-    // 更新滑动窗口
-    sum -= samples[index];
-    samples[index] = new_sample;
-    sum += new_sample;
-    index = (index + 1) % WINDOW_SIZE;
-
-    // 计算平均值
-    return (sum / WINDOW_SIZE);
-}
 
 void IR_Init(IR_t* ir, GPIO_Regs* S1_port, uint32_t S1_pin, GPIO_Regs* S2_port, uint32_t S2_pin, GPIO_Regs* S3_port, uint32_t S3_pin, GPIO_Regs* S4_port, uint32_t S4_pin){
     ir->S1_port = S1_port;
@@ -75,8 +60,6 @@ int IR_get_pos(IR_t *ir1, IR_t *ir2) {
         pos = 18;
         last_pos = 18;
     }
-
-    pos = moving_average_filter(pos);
 
     return pos;
 }
