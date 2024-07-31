@@ -6,6 +6,7 @@ double timer = 0;
 MPU6050_t mpu6050;
 // Setup MPU6050
 #define MPU6050_ADDRESS 0xD0
+#define abs(x) ((x) > 0 ? (x) : -(x))
 const uint16_t i2c_timeout = 100;
 const double Accel_Z_corrector = 14418.0;
 double Gyro_Z_corrector = 0.55;
@@ -61,36 +62,36 @@ void MPU6050_Read_All(MPU6050_t *DataStruct)
     timer = uptime;
 	uint8_t DataH, DataL;
 	
-	DataH = MPU6050_ReadReg(MPU6050_ACCEL_XOUT_H);
-	DataL = MPU6050_ReadReg(MPU6050_ACCEL_XOUT_L);
-    DataStruct->Accel_X_RAW = (int16_t)(DataH << 8 | DataL);
-	
-	DataH = MPU6050_ReadReg(MPU6050_ACCEL_YOUT_H);
-    DataL = MPU6050_ReadReg(MPU6050_ACCEL_YOUT_L);
-    DataStruct->Accel_Y_RAW = (int16_t)(DataH << 8 | DataL);
-
-    DataH = MPU6050_ReadReg(MPU6050_ACCEL_ZOUT_H);
-    DataL = MPU6050_ReadReg(MPU6050_ACCEL_ZOUT_L);
-    DataStruct->Accel_Z_RAW = (int16_t)(DataH << 8 | DataL);
-
-    DataH = MPU6050_ReadReg(MPU6050_GYRO_XOUT_H);
-    DataL = MPU6050_ReadReg(MPU6050_GYRO_XOUT_L);
-    DataStruct->Gyro_X_RAW = (int16_t)(DataH << 8 | DataL);
-
-    DataH = MPU6050_ReadReg(MPU6050_GYRO_YOUT_H);
-    DataL = MPU6050_ReadReg(MPU6050_GYRO_YOUT_L);
-    DataStruct->Gyro_Y_RAW = (int16_t)(DataH << 8 | DataL);
+//	DataH = MPU6050_ReadReg(MPU6050_ACCEL_XOUT_H);
+//	DataL = MPU6050_ReadReg(MPU6050_ACCEL_XOUT_L);
+//    DataStruct->Accel_X_RAW = (int16_t)(DataH << 8 | DataL);
+//
+//	DataH = MPU6050_ReadReg(MPU6050_ACCEL_YOUT_H);
+//    DataL = MPU6050_ReadReg(MPU6050_ACCEL_YOUT_L);
+//    DataStruct->Accel_Y_RAW = (int16_t)(DataH << 8 | DataL);
+//
+//    DataH = MPU6050_ReadReg(MPU6050_ACCEL_ZOUT_H);
+//    DataL = MPU6050_ReadReg(MPU6050_ACCEL_ZOUT_L);
+//    DataStruct->Accel_Z_RAW = (int16_t)(DataH << 8 | DataL);
+//
+//    DataH = MPU6050_ReadReg(MPU6050_GYRO_XOUT_H);
+//    DataL = MPU6050_ReadReg(MPU6050_GYRO_XOUT_L);
+//    DataStruct->Gyro_X_RAW = (int16_t)(DataH << 8 | DataL);
+//
+//    DataH = MPU6050_ReadReg(MPU6050_GYRO_YOUT_H);
+//    DataL = MPU6050_ReadReg(MPU6050_GYRO_YOUT_L);
+//    DataStruct->Gyro_Y_RAW = (int16_t)(DataH << 8 | DataL);
 
     DataH = MPU6050_ReadReg(MPU6050_GYRO_ZOUT_H);
     DataL = MPU6050_ReadReg(MPU6050_GYRO_ZOUT_L);
     DataStruct->Gyro_Z_RAW = (int16_t)(DataH << 8 | DataL);
 
-    DataStruct->Ax = DataStruct->Accel_X_RAW / 16384.0;
-    DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
-    DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
-
-    DataStruct->Gx = DataStruct->Gyro_X_RAW / 131.0;
-    DataStruct->Gy = DataStruct->Gyro_Y_RAW / 131.0;
+//    DataStruct->Ax = DataStruct->Accel_X_RAW / 16384.0;
+//    DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
+//    DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
+//
+//    DataStruct->Gx = DataStruct->Gyro_X_RAW / 65.5;
+//    DataStruct->Gy = DataStruct->Gyro_Y_RAW / 65.5;
     DataStruct->Gz = DataStruct->Gyro_Z_RAW / 131.0 + Gyro_Z_corrector;
 
     double AngleZ = DataStruct->Gz * dt;

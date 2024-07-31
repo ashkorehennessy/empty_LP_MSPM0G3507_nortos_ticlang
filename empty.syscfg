@@ -253,6 +253,7 @@ TIMER1.timerStartTimer    = true;
 TIMER1.timerPeriod        = "5 ms";
 TIMER1.timerClkDiv        = 8;
 TIMER1.timerClkPrescale   = 100;
+TIMER1.interruptPriority  = "1";
 TIMER1.peripheral.$assign = "TIMG7";
 
 UART1.$name             = "UART_0";
