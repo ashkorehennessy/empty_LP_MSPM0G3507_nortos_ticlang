@@ -8,6 +8,8 @@
 #include "MPU6050.h"
 
 extern uint32_t uptime;
+int turn1_angle = 35;
+int turn2_angle = 56;
 int tracking_mode = 0;
 float target_angle = 0;
 int target_distance = 0;
@@ -81,7 +83,7 @@ int task2(){
 
 int task3_prepare(){
     target_distance = 28000;
-    target_angle = mpu6050.AngleZ;
+    target_angle = mpu6050.AngleZ + turn1_angle;
     tracking_mode = 0;
     need_calibrate = 1;
 }
@@ -101,7 +103,7 @@ int task3(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 2;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 56;
+                target_angle = mpu6050.AngleZ - turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -128,7 +130,7 @@ int task3(){
 
 int task4_prepare(){
     target_distance = 28000;
-    target_angle = mpu6050.AngleZ;
+    target_angle = mpu6050.AngleZ + turn1_angle;
     tracking_mode = 0;
     need_calibrate = 1;
 }
@@ -148,7 +150,7 @@ int task4(){
             if (mpu6050.AngleZ < target_angle) {
                 task_state = 2;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 56;
+                target_angle = mpu6050.AngleZ - turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -168,7 +170,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 4;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 56;
+                target_angle = mpu6050.AngleZ + turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -188,7 +190,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 6;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 56;
+                target_angle = mpu6050.AngleZ - turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -208,7 +210,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 8;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 56;
+                target_angle = mpu6050.AngleZ + turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -228,7 +230,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 10;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 56;
+                target_angle = mpu6050.AngleZ - turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -248,7 +250,7 @@ int task4(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 12;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 56;
+                target_angle = mpu6050.AngleZ + turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;
@@ -268,7 +270,7 @@ int task4(){
             if(mpu6050.AngleZ < target_angle) {
                 task_state = 14;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ - 56;
+                target_angle = mpu6050.AngleZ - turn2_angle;
                 target_distance = 28000;
                 tracking_mode = 0;
                 left_count_sum = 0;

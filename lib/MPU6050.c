@@ -9,7 +9,7 @@ MPU6050_t mpu6050;
 #define abs(x) ((x) > 0 ? (x) : -(x))
 const uint16_t i2c_timeout = 100;
 const double Accel_Z_corrector = 14418.0;
-double Gyro_Z_corrector = 0.55;
+double Gyro_Z_corrector = 0.43;
 
 void MPU6050_WriteReg(uint8_t RegAddress,uint8_t Data)
 {
@@ -58,7 +58,7 @@ uint8_t MPU6050_GetID(void)
 
 void MPU6050_Read_All(MPU6050_t *DataStruct)
 {
-    double dt = (uptime - timer) / 1000;
+    double dt = (uptime - timer) / 1000.0;
     timer = uptime;
 	uint8_t DataH, DataL;
 	

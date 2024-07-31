@@ -3,7 +3,7 @@
 //
 
 #include "IR.h"
-#define WINDOW_SIZE 20
+#define WINDOW_SIZE 5
 static int moving_average_filter(int new_sample) {
     static int samples[WINDOW_SIZE] = {0};
     static int index = 0;

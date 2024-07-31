@@ -30,6 +30,9 @@ extern int right_setpoint;
 extern float ir_pos;
 extern int ir_not_found;
 extern int first_detect;
+extern int turn1_angle;
+extern int turn2_angle;
+extern double Gyro_Z_corrector;
 
 void UI_item_init(UI_item *item, const char *name, int type, void *var_ptr) {
     strcpy(item->name, name);
@@ -200,7 +203,9 @@ void UI_init(){
     UI_item_init(&items[2][6], "tAngl", FLOAT, &target_angle);
     UI_item_init(&items[3][0], "IRnf ", INT32, &ir_not_found);
     UI_item_init(&items[3][1], "fdet ", INT32, &first_detect);
-
+    UI_item_init(&items[3][2], "t1ang", INT32, &turn1_angle);
+    UI_item_init(&items[3][3], "t2ang", INT32, &turn2_angle);
+    UI_item_init(&items[3][4], "Gzcor", DOUBLE, &Gyro_Z_corrector);
 
 }
 
