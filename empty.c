@@ -205,12 +205,11 @@ void counter_process(){
         if (counter.led_ms % 501 > 250) {
             DL_GPIO_setPins(LED_PORT, LED_led1_PIN);
             DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);
-            beep_on();
         } else {
             DL_GPIO_clearPins(LED_PORT, LED_led1_PIN);
             DL_GPIO_setPins(LED_PORT, LED_led2_PIN);
-            beep_off();
         }
+        beep_on();
     } else {
         DL_GPIO_clearPins(LED_PORT, LED_led1_PIN);
         DL_GPIO_clearPins(LED_PORT, LED_led2_PIN);

@@ -85,7 +85,6 @@ int task3_prepare(){
     target_distance = 28000;
     target_angle = mpu6050.AngleZ + turn1_angle;
     tracking_mode = 0;
-    need_calibrate = 1;
 }
 
 int task3(){
@@ -96,6 +95,7 @@ int task3(){
                 task_state = 1;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ - 194;
             }
             break;
@@ -132,7 +132,6 @@ int task4_prepare(){
     target_distance = 28000;
     target_angle = mpu6050.AngleZ + turn1_angle;
     tracking_mode = 0;
-    need_calibrate = 1;
 }
 
 int task4(){
@@ -143,6 +142,7 @@ int task4(){
                 task_state = 1;
                 counter.led_ms = 1000;
                 tracking_mode = 1;
+                need_calibrate = 1;
                 target_angle = mpu6050.AngleZ - 194;
             }
             break;
