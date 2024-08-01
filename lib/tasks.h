@@ -20,7 +20,8 @@ int task3_prepare();
 int task3();
 int task4_prepare();
 int task4();
-
+int task5_prepare();
+int task5();
 
 
 #endif //EMPTY_LP_MSPM0G3507_NORTOS_TICLANG_TASKS_H

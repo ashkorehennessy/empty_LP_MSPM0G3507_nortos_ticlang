@@ -21,6 +21,8 @@ int exponent = 0;
 int ui_state = 0;  // 0:移动光标 1:修改数值 2:修改数值的指数
 int key_pressed = 0;
 
+extern int distance1;
+extern int distance2;
 extern int speed_L;
 extern int speed_R;
 extern IR_t Left_IR;
@@ -32,6 +34,7 @@ extern int ir_not_found;
 extern int first_detect;
 extern int turn1_angle;
 extern int turn2_angle;
+extern int turn3_angle;
 extern double Gyro_Z_corrector;
 
 void UI_item_init(UI_item *item, const char *name, int type, void *var_ptr) {
@@ -202,10 +205,12 @@ void UI_init(){
     UI_item_init(&items[2][5], "tdist", INT32, &target_distance);
     UI_item_init(&items[2][6], "tAngl", FLOAT, &target_angle);
     UI_item_init(&items[3][0], "IRnf ", INT32, &ir_not_found);
-    UI_item_init(&items[3][1], "fdet ", INT32, &first_detect);
+    UI_item_init(&items[3][1], "Gzcor", DOUBLE, &Gyro_Z_corrector);
     UI_item_init(&items[3][2], "t1ang", INT32, &turn1_angle);
     UI_item_init(&items[3][3], "t2ang", INT32, &turn2_angle);
-    UI_item_init(&items[3][4], "Gzcor", DOUBLE, &Gyro_Z_corrector);
+    UI_item_init(&items[3][4], "t3ang", INT32, &turn3_angle);
+    UI_item_init(&items[3][5], "dist1", INT32, &distance1);
+    UI_item_init(&items[3][6], "dist2", INT32, &distance2);
 
 }
 
@@ -356,6 +361,9 @@ void UI_key_process(){
                     break;
                 case 4:
                     task4_prepare();
+                    break;
+                case 5:
+                    task5_prepare();
                     break;
             }
         } else {

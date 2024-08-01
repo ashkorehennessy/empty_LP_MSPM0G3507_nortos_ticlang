@@ -136,6 +136,9 @@ int main(void)
                 case 4:
                     task4();
                     break;
+                case 5:
+                    task5();
+                    break;
             }
         }
 //        delay_ms(20);
@@ -233,7 +236,7 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
     IR_Read(&Right_IR);
     ir_not_found = IR_not_found();
     ir_pos = IR_get_pos(&Left_IR, &Right_IR);
-    if(task_running == 1 && task_index < 5) {
+    if(task_running == 1 && task_index < 6) {
         if (tracking_mode == 1) {
             if(ir_not_found == 0) {
                 turn_out = PID_Base_Calc(&track_pid, ir_pos, 0);
