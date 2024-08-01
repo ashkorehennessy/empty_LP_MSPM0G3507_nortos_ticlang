@@ -20,7 +20,7 @@ extern int right_count_sum;
 extern int need_calibrate;
 
 int task1_prepare(){
-    target_distance = 22000;
+    target_distance = 25000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
     need_calibrate = 0;
@@ -37,7 +37,7 @@ int task1(){
 
 
 int task2_prepare(){
-    target_distance = 22000;
+    target_distance = 23000;
     target_angle = mpu6050.AngleZ;
     tracking_mode = 0;
     need_calibrate = 0;
@@ -57,7 +57,7 @@ int task2(){
             if(mpu6050.AngleZ > target_angle) {
                 task_state = 2;
                 counter.led_ms = 1000;
-                target_angle = mpu6050.AngleZ + 13;
+                target_angle = mpu6050.AngleZ + 14;
                 target_distance = 22000;
                 tracking_mode = 0;
                 left_count_sum = 0;
