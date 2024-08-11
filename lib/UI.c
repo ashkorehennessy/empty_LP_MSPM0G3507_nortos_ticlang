@@ -365,6 +365,9 @@ void UI_key_process(){
                 case 5:
                     task5_prepare();
                     break;
+                case 6:
+                    task6_prepare();
+                    break;
             }
         } else {
             task_running = 0;

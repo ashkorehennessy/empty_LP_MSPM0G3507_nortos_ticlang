@@ -7,23 +7,26 @@
 #include "counter.h"
 #include "MPU6050.h"
 #include "PID.h"
+#include "IR.h"
 
 extern uint32_t uptime;
 extern float base_setpoint;
 int turn1_angle = 35;
 int turn2_angle = 53;
 int turn3_angle = 194;
-int distance1 = 28000;
-int distance2 = 23000;
+int distance1 = 30000;
+int distance2 = 26000;
 int tracking_mode = 0;
 float target_angle = 0;
 int target_distance = 0;
 uint8_t task_running = 0;
-uint8_t task_index = 4;
+uint8_t task_index = 6;
 extern int left_count_sum;
 extern int right_count_sum;
 extern int need_calibrate;
 extern PID_Base track_pid;
+extern IR_t Left_IR;
+extern IR_t Right_IR;
 
 int task1_prepare(){
     target_distance = 25000;
@@ -350,11 +353,26 @@ int task5(){
                 left_count_sum = 0;
                 right_count_sum = 0;
                 round++;
-                if (round == 10) {
+                if (round == 4) {
                     task_running = 0;
                     counter.led_ms = 2000;
                 }
             }
             break;
+    }
+}
+
+int task6_prepare(){
+    tracking_mode = 1;
+    need_calibrate = 0;
+}
+
+int task6(){
+    if(Left_IR.S1 + Left_IR.S2 + Left_IR.S3 + Left_IR.S4 + Right_IR.S1 + Right_IR.S2 + Right_IR.S3 + Right_IR.S4 < 4){
+        task_running = 0;
+        counter.led_ms = 2000;
+        return 1;
+    } else {
+        return 0;
     }
 }

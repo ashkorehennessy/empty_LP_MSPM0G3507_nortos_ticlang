@@ -9,7 +9,7 @@ MPU6050_t mpu6050;
 #define abs(x) ((x) > 0 ? (x) : -(x))
 const uint16_t i2c_timeout = 100;
 const double Accel_Z_corrector = 14418.0;
-double Gyro_Z_corrector = 0.43;
+double Gyro_Z_corrector = 0.41;
 
 void MPU6050_WriteReg(uint8_t RegAddress,uint8_t Data)
 {

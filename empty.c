@@ -69,7 +69,7 @@ PID_Base left_pid;
 PID_Base right_pid;
 Motor motor_L;
 Motor motor_R;
-float base_setpoint = 50;
+float base_setpoint = 140;
 float left_setpoint = 0;
 float right_setpoint = 0;
 int ir_not_found = 0;
@@ -95,11 +95,19 @@ uint8_t str[50],str2[50];
 int speed_L=0,speed_R=0,speed=1000,angel_error=0;
 uint32_t uptime = 0;
 
+#define LOWPASS_FILTER_FACTOR 0.33f
+static int lowpass_filter(int new_sample) {
+    static int last_sample = 0;
+    int filtered_sample = (last_sample * LOWPASS_FILTER_FACTOR) + new_sample * (1 - LOWPASS_FILTER_FACTOR);
+    last_sample = filtered_sample;
+    return filtered_sample;
+}
+
 int main(void)
 {
     SYSCFG_DL_init();
-    track_pid = PID_Base_Init(-2, 0, 0, 800, -800, 1, 0, 0, 0);
-    angle_pid = PID_Base_Init(1.5, 0, 0, 900, -900, 1, 0, 0, 0);
+    track_pid = PID_Base_Init(-6, 0, -8, 800, -800, 1, 0, 0, 0);
+    angle_pid = PID_Base_Init(4, 0, 0, 900, -900, 1, 0, 0, 0);
     roaming_pid = PID_Base_Init(0, 0, 0, 900, -900, 0, 0, 0, 0);
     left_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
     right_pid = PID_Base_Init(10, 0, 1, 900, -900, 0, 0, 0, 0);
@@ -138,6 +146,9 @@ int main(void)
                     break;
                 case 5:
                     task5();
+                    break;
+                case 6:
+                    task6();
                     break;
             }
         }
@@ -235,8 +246,8 @@ void TIMER_Encoder_Read_INST_IRQHandler(void){
     IR_Read(&Left_IR);
     IR_Read(&Right_IR);
     ir_not_found = IR_not_found();
-    ir_pos = IR_get_pos(&Left_IR, &Right_IR);
-    if(task_running == 1 && task_index < 6) {
+    ir_pos = lowpass_filter(IR_get_pos(&Left_IR, &Right_IR));
+    if(task_running == 1 && task_index < 7) {
         if (tracking_mode == 1) {
             if(ir_not_found == 0) {
                 turn_out = PID_Base_Calc(&track_pid, ir_pos, 0);

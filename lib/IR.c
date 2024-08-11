@@ -46,18 +46,20 @@ int IR_get_pos(IR_t *ir1, IR_t *ir2) {
         pos = last_pos;
     }
     if(ir1->S4 == 0) {
-        pos = -8;
+        pos = -6;
+        last_pos = -6;
     }
     if(ir2->S1 == 0){
-        pos = 8;
+        pos = 6;
+        last_pos = 6;
     }
     if(ir1->S1 == 0){
-        pos = -25;
-        last_pos = -25;
+        pos = -35;
+        last_pos = -35;
     }
     if(ir2->S4 == 0){
-        pos = 25;
-        last_pos = 25;
+        pos = 35;
+        last_pos = 35;
     }
     if(ir1->S2 == 0){
         pos = -20;
@@ -75,8 +77,11 @@ int IR_get_pos(IR_t *ir1, IR_t *ir2) {
         pos = 18;
         last_pos = 18;
     }
-
-    pos = moving_average_filter(pos);
+    if(ir1->S4 == 0 && ir2->S1 == 0) {
+        pos = 0;
+        last_pos = 0;
+    }
+//    pos = moving_average_filter(pos);
 
     return pos;
 }
